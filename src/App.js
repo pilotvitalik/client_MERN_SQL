@@ -10,8 +10,9 @@ function App() {
   const[position, setPosition] = useState('');
   const[wage, setWage] = useState(0);
 
+  const[employeeList, setEmployeeList] = useState([]);
+
   const addEmployee = () => {
-    console.log(name);
     Axios.post('http://localhost:3001/create', {
       name: name,
       age: age,
@@ -21,6 +22,13 @@ function App() {
     })
     .then(() => {
       console.log('success');
+    });
+  }
+
+  const getEmployees =() => {
+    Axios.get('http://localhost:3001/employees')
+    .then((response) => {
+      console.log(response);
     });
   }
 
@@ -38,6 +46,10 @@ function App() {
       	<label>Wage (month):</label>
       	<input type='number'  onChange={ (event) => { setWage(event.target.value) } }/>
         <button onClick={ addEmployee }>Add</button>
+      </div>
+      <hr/>
+      <div>
+        <button onClick={ getEmployees }>Show employee list</button>
       </div>
     </div>
   );

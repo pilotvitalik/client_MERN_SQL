@@ -12,6 +12,8 @@ function App() {
 
   const[employeeList, setEmployeeList] = useState([]);
 
+  const[newWage, setNewWage] = useState(0);
+
   const addEmployee = () => {
     Axios.post('http://localhost:3001/create', {
       name: name,
@@ -25,12 +27,43 @@ function App() {
     });
   }
 
-  const getEmployees =() => {
+  const getEmployees = () => {
     Axios.get('http://localhost:3001/employees')
     .then((response) => {
-      console.log(response);
+      setEmployeeList(response.data);
     });
   }
+
+  const updateEmployeeWage = (id) => {
+    Axios.put('http://localhost:3001/update', 
+      {wage: newWage, id: id})
+    .then((response) => {
+      setEmployeeList(
+        employeeList.map((val) => {
+          return val.id == id
+            ? {
+                id: val.id,
+                name: val.name,
+                country: val.country,
+                age: val.age,
+                position: val.position,
+                wage: newWage,
+              }
+            : val;
+        })
+      );
+    });
+  }
+
+  const deleteEmployee = (id) => {
+    Axios.delete(`http://localhost:3001/delete/${id}`).then((response) => {
+      setEmployeeList(
+        employeeList.filter((val) => {
+          return val.id != id;
+        })
+      );
+    });
+  };
 
   return (
     <div className="App">
@@ -49,6 +82,25 @@ function App() {
       </div>
       <hr/>
       <div>
+        { employeeList.map((val, key) => {
+          return <div>
+                    <div>
+                      <p>{val.name}</p>
+                      <p>{val.age}</p>
+                      <p>{val.country}</p>
+                      <p>{val.position}</p>
+                      <p>{val.wage}</p>
+                    </div>
+                    <input type='text'
+                      onChange = {(event) => {
+                        setNewWage(event.target.value);
+                      }}
+                    />
+                    <button onClick={ () => { updateEmployeeWage(val.id) } }>Update</button>
+                    <button onClick={() => { deleteEmployee(val.id) }}>Delete</button>
+                 <hr/>
+                 </div> 
+        })}
         <button onClick={ getEmployees }>Show employee list</button>
       </div>
     </div>
